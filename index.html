@@ -3,212 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All About Desity</title>
+  <title>All About Destiny</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;500&display=swap" rel="stylesheet">
   <style>
-    body { 
-      font-family: Georgia, serif; 
-      background: #0a0a0a; 
-      color: #f1f1f1; 
+    body { background-color: #fff; color: #000; font-family: 'Noto Serif SC', serif; overflow-x: hidden; }
+    .hero-title { font-weight: 200; letter-spacing: -0.02em; font-size: clamp(3rem, 12vw, 9rem); line-height: 0.9; }
+    /* 模拟参考图中的大星星 */
+    .star-outline {
+      position: absolute;
+      top: 15%;
+      left: 30%;
+      width: 50vw;
+      opacity: 0.1;
+      z-index: -1;
+      pointer-events: none;
     }
-    .hero {
-      height: 100vh;
-      background-image: url('https://i.ibb.co/pBD1pmHZ/IMG-7541.jpg');
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-    .overlay {
-      background: rgba(5, 5, 5, 0.78);
-      padding: 4.5rem 3rem;
-      max-width: 720px;
-      border-radius: 24px;
-    }
-    .section-title {
-      font-size: 2.75rem;
-      line-height: 1.1;
-      font-weight: 300;
-      letter-spacing: -0.03em;
-    }
-    .vinyl {
-      transition: all 0.4s ease;
-    }
-    .vinyl:hover {
-      transform: scale(1.08) rotate(8deg);
-      box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
-    }
+    .album-card { transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1); filter: grayscale(100%); opacity: 0.4; }
+    .swiper-slide-active .album-card { filter: grayscale(0%); opacity: 1; transform: scale(1.05); }
+    .text-vertical { writing-mode: vertical-rl; }
   </style>
 </head>
 <body>
 
-  <!-- 主页 Hero -->
-  <section class="hero flex items-center">
-    <div class="max-w-5xl mx-auto px-8 relative z-10">
-      <div class="overlay">
-        <h1 class="text-6xl md:text-7xl font-light tracking-tighter mb-10">All About Desity</h1>
-        
-        <div class="text-2xl leading-tight mb-12">
-          祝福你無論身在何處，<br>
-          都是完全的自己，<br>
-          也因此，不必流浪。<br>
-          平安，圓滿。
+  <svg class="star-outline" viewBox="0 0 512 512" fill="none" stroke="black" stroke-width="2">
+    <path d="M256 40l61 168h175L350 312l54 160-148-98-148 98 54-160L20 208h175z"/>
+  </svg>
+
+  <nav class="p-10 flex justify-between items-start text-[10px] tracking-[0.5em] uppercase">
+    <div>Yuyongting / 2026</div>
+    <div class="text-right">Fragments<br>Soundtrack<br>Identity</div>
+  </nav>
+
+  <header class="min-h-[70vh] flex flex-col justify-end px-10 md:px-24 pb-20">
+    <h1 class="hero-title">ALL ABOUT<br>DESTINY.</h1>
+    <p class="mt-10 text-xs italic tracking-widest opacity-40">"one thing i can tell you is you got to be free"</p>
+  </header>
+
+  <section class="py-40">
+    <div class="swiper album-swiper overflow-visible px-10">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide w-[280px] md:w-[400px]">
+          <div class="album-card">
+            <img src="https://i.ibb.co/7dM4QCx4/IMG-6823.jpg" class="w-full shadow-sm">
+            <p class="mt-4 text-[9px] tracking-widest uppercase">Mineral / EndSerenading</p>
+          </div>
         </div>
-
-        <div class="border-l-2 border-amber-300 pl-6 mb-12">
-          <p class="text-xl mb-4">分享陳綺貞 〈雨水一盒 (A Box of Rain)〉</p>
-          <a href="https://163cn.tv/3XEtfJR" target="_blank" 
-             class="mt-6 inline-flex items-center gap-3 px-8 py-4 border border-white/50 hover:border-amber-300 rounded-full text-sm tracking-widest">
-            → 在网易云音乐完整聆听
-          </a>
+        <div class="swiper-slide w-[280px] md:w-[400px]">
+          <div class="album-card">
+            <img src="https://i.ibb.co/pB7Wvb7D/IMG-6824.jpg" class="w-full shadow-sm">
+            <p class="mt-4 text-[9px] tracking-widest uppercase">透明杂志 / 我们的灵魂乐</p>
+          </div>
         </div>
-
-        <button onclick="document.getElementById('music-wall').scrollIntoView({behavior:'smooth'})" 
-                class="px-10 py-5 border border-white/60 hover:bg-white/10 rounded-full text-sm tracking-widest">
-          進入我的音樂牆 →
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- 音樂牆（竖向唱片墙，可滑动） -->
-  <section id="music-wall" class="py-24 bg-zinc-950">
-    <div class="max-w-4xl mx-auto px-8">
-      <h2 class="section-title mb-16">音樂牆</h2>
-      <div class="swiper vertical-swiper h-[520px] overflow-hidden">
-        <div class="swiper-wrapper" id="vinyl-list"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 個人記錄 -->
-  <section class="py-24 bg-black">
-    <div class="max-w-3xl mx-auto px-8">
-      <h2 class="section-title mb-12">個人記錄</h2>
-      <div class="space-y-12 text-zinc-300">
-        <div class="border-l border-zinc-700 pl-8">
-          <p class="text-lg">在这里写你的经历、故事或重要时刻……</p>
-          <p class="text-xs text-zinc-500 mt-4">日期 / 地点</p>
+        <div class="swiper-slide w-[280px] md:w-[400px]">
+          <div class="album-card">
+            <img src="https://i.ibb.co/pBHns4Yd/IMG-6821.jpg" class="w-full shadow-sm">
+            <p class="mt-4 text-[9px] tracking-widest uppercase">张悬 / 亲爱的…</p>
+          </div>
         </div>
-        <!-- 复制上面整个 <div>...</div> 来添加新条目 -->
-      </div>
-    </div>
-  </section>
-
-  <!-- 個人情感分享 -->
-  <section class="py-24 bg-zinc-950">
-    <div class="max-w-3xl mx-auto px-8">
-      <h2 class="section-title mb-12">個人情感分享</h2>
-      <div class="space-y-12 text-zinc-300">
-        <div class="border-l border-zinc-700 pl-8">
-          <p class="text-lg">在这里分享你对音乐、情感、生活的感悟……</p>
+        <div class="swiper-slide w-[280px] md:w-[400px]">
+          <div class="album-card">
+            <img src="https://i.ibb.co/whDZddfZ/IMG-6822.jpg" class="w-full shadow-sm">
+            <p class="mt-4 text-[9px] tracking-widest uppercase">陈绮贞 / 时间的歌</p>
+          </div>
+        </div>
+        <div class="swiper-slide w-[280px] md:w-[400px]">
+          <div class="album-card">
+            <img src="https://i.ibb.co/4nC6wM7G/IMG-6828.jpg" class="w-full shadow-sm">
+            <p class="mt-4 text-[9px] tracking-widest uppercase">薄荷叶 / 的士房间</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 心情記錄 -->
-  <section class="py-24 bg-black">
-    <div class="max-w-3xl mx-auto px-8">
-      <h2 class="section-title mb-12">心情記錄</h2>
-      <div class="bg-zinc-900 p-10 rounded-3xl">
-        <textarea id="mood-input" rows="4" class="w-full bg-transparent border border-zinc-700 rounded-2xl p-6 text-lg placeholder-zinc-500" 
-                  placeholder="今天的心情、想说的话..."></textarea>
-        <button onclick="saveMood()" class="mt-6 px-10 py-4 bg-zinc-800 hover:bg-zinc-700 rounded-full">記錄這一刻</button>
+  <section class="px-10 md:px-24 py-40 space-y-64">
+    <div class="flex flex-col md:flex-row gap-20 items-start">
+      <div class="w-full md:w-1/2">
+        <img src="https://i.ibb.co/n8f7K4Zf/fxn-2025-12-23-175902-319.jpg" class="w-full grayscale shadow-2xl">
       </div>
-      <div id="mood-history" class="mt-12 space-y-8"></div>
+      <div class="pt-10">
+        <p class="text-xl md:text-2xl leading-relaxed font-light">
+          每次出门都幻想自己会阅读。<br>
+          每次都带着书出门带着没电的手机和没翻来的书回去。好吧。
+        </p>
+      </div>
+    </div>
+
+    <div class="flex justify-end">
+      <p class="text-4xl md:text-7xl font-bold leading-tight text-right">
+        这个世界在<br>十七岁就毁灭了
+      </p>
+    </div>
+
+    <div class="flex flex-col md:flex-row-reverse gap-20">
+      <div class="w-full md:w-1/2">
+        <img src="https://i.ibb.co/XrQZCfSR/IMG-4029.jpg" class="w-full grayscale">
+      </div>
+      <div class="self-end">
+        <p class="text-xl italic opacity-50">"I'm trying to go on this path<br>But you say I haven't get the jests"</p>
+      </div>
     </div>
   </section>
 
-  <!-- 閱讀摘抄 -->
-  <section class="py-24 bg-zinc-950">
-    <div class="max-w-3xl mx-auto px-8">
-      <h2 class="section-title mb-12">閱讀摘抄</h2>
-      <div class="space-y-12">
-        <div class="border-l-4 border-amber-300 pl-8">
-          <p class="italic text-2xl">"在这里粘贴书中的摘抄句子……"</p>
-          <p class="mt-6 text-sm text-zinc-400">- 书名 / 作者</p>
-          <p class="mt-4 text-zinc-500">你的感悟或想法</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="py-20 text-center text-xs text-zinc-500 border-t border-zinc-800">
-    All About Desity • 在雨水與吉他聲中，成為完全的自己
+  <footer class="py-64 px-10 text-center">
+    <p class="max-w-2xl mx-auto text-sm leading-loose opacity-30 italic">
+      Time doesn't always heal, it just breathes and swallows memories Like the seasons change Sending showers, beating flowers into the mud.
+    </p>
+    <div class="mt-40 text-[9px] tracking-[0.8em] uppercase">Built for the Unseen / 2026</div>
   </footer>
 
   <script>
-    // 示例唱片数据（后面你可以轻松添加更多）
-    let vinyls = [
-      { title: "雨水一盒", artist: "陳綺貞", cover: "https://picsum.photos/id/201/400/400" },
-      { title: "另一首", artist: "張懸", cover: "https://picsum.photos/id/301/400/400" }
-    ];
-
-    function initVinylWall() {
-      const container = document.getElementById('vinyl-list');
-      container.innerHTML = vinyls.map((v, i) => `
-        <div class="swiper-slide flex justify-center py-4">
-          <div onclick="playVinyl(${i})" class="vinyl w-64 cursor-pointer">
-            <img src="${v.cover}" class="w-full aspect-square object-cover rounded-2xl shadow-2xl border border-zinc-700">
-            <div class="mt-4 text-center">
-              <p class="font-medium">${v.title}</p>
-              <p class="text-sm text-zinc-500">${v.artist}</p>
-            </div>
-          </div>
-        </div>
-      `).join('');
-
-      new Swiper('.vertical-swiper', {
-        direction: 'vertical',
-        slidesPerView: 1.8,
-        centeredSlides: true,
-        spaceBetween: 30,
-        loop: true,
-      });
-    }
-
-    function playVinyl(i) {
-      console.log('点击了唱片：' + vinyls[i].title);
-      // 滑动音效（轻微弦音）
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = 220;
-        osc.connect(ctx.destination);
-        osc.start();
-        setTimeout(() => osc.stop(), 80);
-      } catch(e) {}
-    }
-
-    // 心情记录功能
-    function saveMood() {
-      const input = document.getElementById('mood-input').value.trim();
-      if (!input) return;
-      let moods = JSON.parse(localStorage.getItem('moods') || '[]');
-      moods.unshift({ text: input, time: new Date().toLocaleString('zh-CN') });
-      localStorage.setItem('moods', JSON.stringify(moods));
-      document.getElementById('mood-input').value = '';
-      renderMoods();
-    }
-
-    function renderMoods() {
-      const container = document.getElementById('mood-history');
-      let moods = JSON.parse(localStorage.getItem('moods') || '[]');
-      container.innerHTML = moods.map(m => `
-        <div class="border-l border-zinc-700 pl-8">
-          <p class="text-lg">${m.text}</p>
-          <p class="text-xs text-zinc-500 mt-3">${m.time}</p>
-        </div>
-      `).join('');
-    }
-
-    window.onload = () => {
-      initVinylWall();
-      renderMoods();
-    };
+    new Swiper('.album-swiper', {
+      centeredSlides: true,
+      slidesPerView: 'auto',
+      spaceBetween: 60,
+      loop: true,
+      mousewheel: { forceToAxis: true }
+    });
   </script>
 </body>
 </html>
