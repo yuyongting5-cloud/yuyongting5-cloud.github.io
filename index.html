@@ -9,39 +9,29 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;500&display=swap" rel="stylesheet">
   <style>
-    :root { --main-bg: #fff; --main-text: #000; }
-    body { background-color: var(--main-bg); color: var(--main-text); font-family: 'Noto Serif SC', serif; overflow-x: hidden; scroll-behavior: smooth; }
-    
-    /* 首页大标题样式 */
-    .hero-title { font-weight: 200; letter-spacing: -0.02em; font-size: clamp(3rem, 12vw, 9rem); line-height: 0.9; z-index: 10; }
-    
-    /* 星星背景控制 */
+    body { background-color: #fff; color: #000; font-family: 'Noto Serif SC', serif; overflow-x: hidden; scroll-behavior: smooth; }
+    .hero-title { font-weight: 200; letter-spacing: -0.02em; font-size: clamp(3rem, 12vw, 9rem); line-height: 0.9; }
     .star-outline { position: absolute; top: 10%; left: 20%; width: 60vw; opacity: 0.07; z-index: -1; pointer-events: none; }
+    
+    /* 唱片墙样式 */
+    .album-vertical-list { height: 600px; overflow-y: auto; scrollbar-width: none; }
+    .album-item { cursor: pointer; transition: 0.4s; filter: grayscale(100%); opacity: 0.3; margin-bottom: 30px; }
+    .album-item.active { filter: grayscale(0%); opacity: 1; transform: translateX(15px); }
 
-    /* 唱片墙：纵向排列与右侧信息流 */
-    .album-vertical-list { height: 500px; overflow-y: auto; scrollbar-width: none; }
-    .album-vertical-list::-webkit-scrollbar { display: none; }
-    .album-item { cursor: pointer; transition: 0.4s; filter: grayscale(100%); opacity: 0.3; margin-bottom: 20px; }
-    .album-item.active { filter: grayscale(0%); opacity: 1; transform: translateX(20px); }
+    /* 碎片专区：限制范围 */
+    .scrapbook-section { position: relative; min-height: 150vh; width: 100%; border-top: 1px solid #eee; border-bottom: 1px solid #eee; overflow: hidden; background: #fafafa; }
+    .scrap-item { position: absolute; cursor: move; transition: opacity 0.3s; }
+    .delete-btn { position: absolute; top: -10px; right: -10px; background: #000; color: #fff; width: 20px; height: 20px; border-radius: 50%; font-size: 12px; display: none; align-items: center; justify-content: center; cursor: pointer; }
+    .scrap-item:hover .delete-btn { display: flex; }
 
-    /* 碎片随机排版区 */
-    .scrapbook-container { position: relative; min-height: 120vh; width: 100%; }
-    .scrap-item { position: absolute; transition: transform 0.3s; cursor: move; }
-    .scrap-item:hover { z-index: 50; transform: scale(1.02); }
+    /* 艺术字排版 */
+    .lyric-art-block span { display: inline-block; margin-right: 15px; }
+    .lyric-art-block span:nth-child(even) { font-style: italic; font-family: serif; transform: translateY(5px); }
 
-    /* 艺术字排版：最后一段歌词 */
-    .lyric-art-block span { display: inline-block; transition: all 0.3s; }
-    .lyric-art-block span:nth-child(even) { font-family: serif; font-style: italic; font-size: 1.4em; transform: translateY(10px); }
-    .lyric-art-block span:nth-child(3n) { font-weight: 900; letter-spacing: 0.2em; font-size: 0.8em; opacity: 0.5; }
-
-    /* 弹窗样式 */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 40px; }
-    .modal-content { width: 100%; max-width: 500px; }
-    textarea { width: 100%; height: 200px; background: transparent; border-bottom: 1px solid #000; font-size: 1.2rem; outline: none; padding: 10px 0; resize: none; }
-
-    /* 留言卡片 */
-    .wish-card { border: 1px solid #eee; padding: 20px; margin-bottom: 15px; animation: fadeIn 0.5s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* 弹窗 */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-content { width: 90%; max-width: 500px; }
+    textarea { width: 100%; height: 150px; border-bottom: 1px solid #000; font-size: 1.2rem; outline: none; padding: 10px 0; resize: none; background: transparent; }
   </style>
 </head>
 <body>
@@ -51,127 +41,162 @@
   </svg>
 
   <header class="min-h-screen flex flex-col md:flex-row items-center justify-center px-10 md:px-24">
-    <div class="flex-1">
+    <div class="flex-1 z-10">
       <h1 class="hero-title">ALL ABOUT<br>DESTINY.</h1>
-      <p class="mt-12 text-2xl md:text-3xl italic tracking-tighter opacity-70">
+      <p class="mt-12 text-2xl md:text-4xl italic tracking-tighter opacity-60">
         "one thing i can tell you is you got to be free"
       </p>
     </div>
     <div class="flex-1 flex justify-center md:justify-end md:-ml-32 mt-10 md:mt-0">
-      <img src="https://i.ibb.co/m58hqtc6/IMG-6823.jpg" class="w-64 md:w-80 shadow-2xl rotate-2">
+      <img src="https://i.ibb.co/m58hqtc6/IMG-6823.jpg" class="w-64 md:w-96 shadow-2xl rotate-1 transition-transform hover:rotate-0 duration-700">
     </div>
   </header>
 
-  <section class="py-40 px-10 md:px-24 flex flex-col md:flex-row gap-20">
-    <div class="w-full md:w-1/3 album-vertical-list" id="albumList">
-      </div>
-    <div class="flex-1 border-l border-black/10 pl-10 flex flex-col justify-center">
+  <section class="py-40 px-10 md:px-24 flex flex-col md:row gap-16">
+    <div class="w-full md:w-1/3 album-vertical-list" id="albumList"></div>
+    <div class="flex-1 border-l border-black/5 pl-10">
       <div id="albumDetail" class="opacity-0 transition-opacity duration-500">
-        <h3 id="detailTitle" class="text-4xl font-bold mb-6">Select an Album</h3>
-        <div id="detailSongs" class="text-sm opacity-40 leading-loose mb-10"></div>
-        <div class="bg-black/5 p-6 relative">
-          <p id="detailLyric" class="italic text-xl">"点击专辑查看歌词摘抄"</p>
-          <button onclick="openModal('lyric')" class="absolute top-2 right-2 text-[10px] opacity-20 hover:opacity-100 uppercase underline">Edit</button>
+        <h3 id="detailTitle" class="text-4xl font-bold mb-4"></h3>
+        <p id="detailSongs" class="text-xs opacity-30 mb-10 tracking-widest uppercase"></p>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center border-b border-black pb-2">
+            <span class="text-[10px] uppercase tracking-widest">Lyrics Collection</span>
+            <button onclick="openModal('albumLyric')" class="text-[10px] underline">+ Add Lyric</button>
+          </div>
+          <div id="albumLyricContainer" class="space-y-6 pt-4"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="scrapbook-container" id="scrapbook" title="双击空白处添加心情或照片">
-    <div class="scrap-item" style="top:10%; left:10%; width:300px;">
-      <p class="text-xl font-light">每次出门都幻想自己会阅读。每次都带着书出门带着没电的手机和没翻过的书回去。好吧</p>
+  <section class="scrapbook-section" id="scrapbook">
+    <div class="absolute top-10 left-10 z-50 flex gap-4">
+      <button onclick="openModal('scrapText')" class="bg-black text-white text-[10px] px-4 py-2 uppercase tracking-widest hover:bg-gray-800">+ Add Text</button>
+      <button onclick="openModal('scrapImage')" class="bg-black text-white text-[10px] px-4 py-2 uppercase tracking-widest hover:bg-gray-800">+ Add Image URL</button>
     </div>
-    <div class="scrap-item" style="top:25%; right:15%;">
-      <img src="https://i.ibb.co/n8f7K4Zf/fxn-2025-12-23-175902-319.jpg" class="w-64 grayscale hover:grayscale-0 transition-all">
-    </div>
-    <div class="scrap-item" style="bottom:20%; left:20%;">
-      <h2 class="text-5xl md:text-8xl font-bold">这个世界在十七岁就毁灭了</h2>
-    </div>
-    <div class="scrap-item" style="top:50%; left:45%;">
-      <p class="italic opacity-50 text-2xl">"I'm trying to go on this path<br>But you say I haven't get the jests"</p>
-    </div>
-    <div class="scrap-item" style="bottom:10%; right:10%;">
-      <img src="https://i.ibb.co/XrQZCfSR/IMG-4029.jpg" class="w-72">
-      <p class="text-right mt-2 text-xs">每一天、我和自己见面</p>
-    </div>
-  </section>
+    </section>
 
-  <footer class="min-h-screen py-40 px-10 text-center flex flex-col items-center justify-between">
-    <div class="lyric-art-block max-w-4xl text-2xl md:text-5xl leading-relaxed cursor-default" id="artLyric">
-      </div>
-
-    <div class="w-full max-w-2xl mt-40">
-      <div class="flex justify-between items-end mb-10 border-b border-black pb-2">
-        <span class="text-4xl font-bold tracking-tighter">I WISH</span>
-        <button onclick="openModal('wish')" class="text-xs uppercase tracking-widest underline">Leave a Message</button>
-      </div>
-      <div id="wishContainer" class="text-left">
-        </div>
-    </div>
+  <footer class="py-40 px-10 text-center">
+    <div class="lyric-art-block max-w-5xl mx-auto text-3xl md:text-6xl leading-snug mb-64" id="artLyric"></div>
     
-    <div class="mt-40 text-[9px] tracking-[0.8em] uppercase opacity-20">Built for the Unseen / 2026</div>
+    <div class="max-w-2xl mx-auto text-left">
+      <div class="flex justify-between items-end mb-10 border-b border-black pb-2">
+        <span class="text-4xl font-bold">I WISH</span>
+        <button onclick="openModal('wish')" class="text-xs underline uppercase">Leave a message</button>
+      </div>
+      <div id="wishContainer" class="space-y-8"></div>
+    </div>
   </footer>
 
   <div id="globalModal" class="modal">
     <div class="modal-content">
-      <h4 id="modalType" class="text-[10px] uppercase tracking-widest mb-6 opacity-30">Write something</h4>
-      <textarea id="modalInput" placeholder="在此输入..."></textarea>
+      <h4 id="modalType" class="text-[10px] uppercase tracking-widest mb-6 opacity-30">Writing...</h4>
+      <textarea id="modalInput" placeholder="输入内容..."></textarea>
       <div class="flex justify-end gap-6 mt-6">
         <button onclick="closeModal()" class="text-xs uppercase">Cancel</button>
-        <button onclick="saveContent()" class="text-xs uppercase font-bold">Save</button>
+        <button onclick="saveContent()" class="text-xs uppercase font-bold underline">Confirm</button>
       </div>
     </div>
   </div>
 
   <script>
-    // 1. 唱片数据
+    // --- 数据持久化 ---
+    const STORAGE_KEY = 'DESTINY_ARCHIVE_V2';
+    let db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+      albumLyrics: {}, // 格式: { albumId: [lyric1, lyric2] }
+      scraps: [],
+      wishes: []
+    };
+    function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+
+    // --- 专辑数据 ---
     const albums = [
-      { id:1, name: 'Mineral / EndSerenading', img: 'https://i.ibb.co/7dM4QCx4/IMG-6823.jpg', songs: '01. Love Letter / 02. Palisade / 03. Gjs', lyric: 'I will always be your favorite ghost.' },
-      { id:2, name: '透明杂志 / 我们的灵魂乐', img: 'https://i.ibb.co/pB7Wvb7D/IMG-6824.jpg', songs: '01. 永远的等待 / 02. 少女 / 03. 我们的灵魂乐', lyric: '去更远的地方，去没有人的地方。' },
-      { id:3, name: '张悬 / 亲爱的…', img: 'https://i.ibb.co/pBHns4Yd/IMG-6821.jpg', songs: '01. 关于我爱你 / 02. 信任的样子 / 03. 并不', lyric: '深深的话要浅浅地说。' }
+      { id:1, name: 'EndSerenading (Mineral)', img: 'https://i.ibb.co/7dM4QCx4/IMG-6823.jpg', songs: 'Love Letter / Palisade / Gjs' },
+      { id:2, name: '我们的灵魂乐 (透明杂志)', img: 'https://i.ibb.co/pB7Wvb7D/IMG-6824.jpg', songs: '永远的等待 / 少女 / 我们的灵魂乐' },
+      { id:3, name: '亲爱的…我还不知道 (张悬)', img: 'https://i.ibb.co/pBHns4Yd/IMG-6821.jpg', songs: '关于我爱你 / 信任的样子 / 并不' },
+      { id:4, name: '时间的歌 (陈绮贞)', img: 'https://i.ibb.co/whDZddfZ/IMG-6822.jpg', songs: '序曲 / 涟漪 / 柏拉图式的爱情' },
+      { id:5, name: '的士房间 (薄荷叶)', img: 'https://i.ibb.co/4nC6wM7G/IMG-6828.jpg', songs: '的士房间 / 破坏 / 19岁' }
     ];
 
-    // 初始化唱片列表
+    let currentAlbumId = 1;
+
+    // --- 初始化唱片墙 ---
     const listEl = document.getElementById('albumList');
     albums.forEach((alb, idx) => {
       const div = document.createElement('div');
       div.className = `album-item ${idx===0?'active':''}`;
-      div.innerHTML = `<img src="${alb.img}" class="w-full shadow-lg"><p class="text-[9px] mt-2 uppercase tracking-widest">${alb.name}</p>`;
+      div.innerHTML = `<img src="${alb.img}" class="w-full shadow-lg">`;
       div.onclick = () => switchAlbum(alb, div);
       listEl.appendChild(div);
+      if(idx === 0) switchAlbum(alb, div);
     });
 
     function switchAlbum(alb, el) {
       document.querySelectorAll('.album-item').forEach(i => i.classList.remove('active'));
       el.classList.add('active');
+      currentAlbumId = alb.id;
       const detail = document.getElementById('albumDetail');
       detail.style.opacity = 0;
       setTimeout(() => {
         document.getElementById('detailTitle').innerText = alb.name;
         document.getElementById('detailSongs').innerText = alb.songs;
-        document.getElementById('detailLyric').innerText = `"${alb.lyric}"`;
+        renderAlbumLyrics();
         detail.style.opacity = 1;
-      }, 500);
+      }, 400);
     }
 
-    // 2. 艺术字歌词生成
-    const fullLyric = "Time doesn't always heal, it just breathes and swallows memories Like the seasons change Sending showers, beating flowers into the mud";
-    const artContainer = document.getElementById('artLyric');
-    fullLyric.split(' ').forEach(word => {
-      const span = document.createElement('span');
-      span.innerText = word + ' ';
-      span.style.marginRight = Math.random() * 20 + 'px';
-      artContainer.appendChild(span);
-    });
+    function renderAlbumLyrics() {
+      const container = document.getElementById('albumLyricContainer');
+      container.innerHTML = '';
+      const lyrics = db.albumLyrics[currentAlbumId] || ["点击右上角添加第一条歌词摘抄"];
+      lyrics.forEach((l, idx) => {
+        const p = document.createElement('div');
+        p.className = 'group relative';
+        p.innerHTML = `<p class="italic text-lg leading-relaxed">"${l}"</p>
+          <button onclick="deleteAlbumLyric(${idx})" class="hidden group-hover:block text-[8px] opacity-30 hover:opacity-100 uppercase mt-1">[Delete]</button>`;
+        container.appendChild(p);
+      });
+    }
 
-    // 3. 弹窗与留言系统
-    let currentMode = '';
-    const nicks = ['Velvet', 'Blue', 'Echo', 'Neon', 'Silent', 'Wild'];
-    const roles = ['Dreamer', 'Ghost', 'Poet', 'Soul', 'Shadow'];
+    // --- 碎片逻辑 ---
+    const initialScraps = [
+      { type:'text', content:'每次出门都幻想自己会阅读。每次都带着书出门带着没电的手机和没翻开的书。好吧', x:50, y:150 },
+      { type:'text', content:'I\'m trying to go on this path But you say I haven\' t get the jests', x:500, y:100 },
+      { type:'text', content:'这个世界大概在我十七岁的时候就毁灭了，现在的每一天都只是我的幻觉。', x:100, y:450 },
+      { type:'text', content:'手裡有打開門的鑰匙但我得承認我只喜歡在生命的房間開一扇窗', x:400, y:700 },
+      { type:'img', content:'https://i.ibb.co/jZvfc09z/IMG-5712.jpg', x:600, y:300 },
+      { type:'img', content:'https://i.ibb.co/mFGz0qmf/IMG-7532.jpg', x:150, y:800 },
+      { type:'img', content:'https://i.ibb.co/PskfMxGg/IMG-5116.jpg', x:700, y:750 },
+      { type:'img', content:'https://i.ibb.co/BVZJFbZB/IMG-1072.jpg', x:50, y:1050 }
+    ];
+
+    function initScraps() {
+      const allScraps = [...initialScraps, ...db.scraps];
+      allScraps.forEach((s, i) => renderScrapElement(s, i >= initialScraps.length));
+    }
+
+    function renderScrapElement(s, isCustom) {
+      const div = document.createElement('div');
+      div.className = 'scrap-item group';
+      div.style.left = s.x + 'px';
+      div.style.top = s.y + 'px';
+      
+      const content = s.type === 'text' 
+        ? `<p class="max-w-xs text-xl font-light bg-white/50 p-2">${s.content}</p>` 
+        : `<img src="${s.content}" class="w-48 md:w-64 shadow-xl">`;
+      
+      div.innerHTML = content + (isCustom ? `<div class="delete-btn" onclick="deleteScrap(${db.scraps.indexOf(s)})">×</div>` : '');
+      document.getElementById('scrapbook').appendChild(div);
+    }
+
+    // --- 交互控制 ---
+    let activeMode = '';
+    const nicks = ['Velvet', 'Blue', 'Neon', 'Silent', 'Wild'];
+    const roles = ['Ghost', 'Poet', 'Soul', 'Shadow', 'River'];
 
     function openModal(mode) {
-      currentMode = mode;
-      document.getElementById('modalType').innerText = mode === 'wish' ? 'I Wish...' : 'Edit Lyric';
+      activeMode = mode;
+      document.getElementById('modalType').innerText = mode.replace(/([A-Z])/g, ' $1');
       document.getElementById('globalModal').style.display = 'flex';
     }
 
@@ -184,32 +209,54 @@
       const val = document.getElementById('modalInput').value;
       if(!val) return;
 
-      if(currentMode === 'wish') {
+      if(activeMode === 'albumLyric') {
+        if(!db.albumLyrics[currentAlbumId]) db.albumLyrics[currentAlbumId] = [];
+        db.albumLyrics[currentAlbumId].push(val);
+      } else if(activeMode === 'scrapText' || activeMode === 'scrapImage') {
+        const newScrap = {
+          type: activeMode === 'scrapText' ? 'text' : 'img',
+          content: val,
+          x: Math.random() * (window.innerWidth - 300) + 50,
+          y: Math.random() * 800 + 100
+        };
+        db.scraps.push(newScrap);
+        renderScrapElement(newScrap, true);
+      } else if(activeMode === 'wish') {
         const name = nicks[Math.floor(Math.random()*nicks.length)] + ' ' + roles[Math.floor(Math.random()*roles.length)];
-        const time = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        const card = document.createElement('div');
-        card.className = 'wish-card';
-        card.innerHTML = `<p class="text-sm leading-relaxed">${val}</p><div class="mt-4 text-[9px] opacity-30 uppercase tracking-widest">@${name} — ${time}</div>`;
-        document.getElementById('wishContainer').prepend(card);
-      } else if(currentMode === 'lyric') {
-        document.getElementById('detailLyric').innerText = `"${val}"`;
+        db.wishes.push({ content: val, name, time: new Date().toLocaleString() });
       }
+
+      persist();
+      if(activeMode === 'albumLyric') renderAlbumLyrics();
+      if(activeMode === 'wish') renderWishes();
       closeModal();
     }
 
-    // 4. 双击空白处添加随机碎片
-    document.getElementById('scrapbook').ondblclick = (e) => {
-      if(e.target.id !== 'scrapbook') return;
-      const text = prompt("想要在这个位置留下什么文字？");
-      if(text) {
+    // --- 删除逻辑 ---
+    window.deleteScrap = (idx) => { db.scraps.splice(idx, 1); persist(); location.reload(); }
+    window.deleteAlbumLyric = (idx) => { db.albumLyrics[currentAlbumId].splice(idx, 1); persist(); renderAlbumLyrics(); }
+
+    function renderWishes() {
+      const container = document.getElementById('wishContainer');
+      container.innerHTML = '';
+      db.wishes.slice().reverse().forEach(w => {
         const div = document.createElement('div');
-        div.className = 'scrap-item bg-white/80 backdrop-blur p-4 border border-black/5 shadow-xl';
-        div.style.left = e.pageX + 'px';
-        div.style.top = e.pageY + 'px';
-        div.innerHTML = `<p class="text-lg">${text}</p>`;
-        document.getElementById('scrapbook').appendChild(div);
-      }
-    };
+        div.className = 'wish-card border-l border-black pl-6 py-2';
+        div.innerHTML = `<p class="text-sm italic mb-2">"${w.content}"</p><span class="text-[9px] opacity-30 uppercase tracking-[0.2em]">@${w.name} — ${w.time}</span>`;
+        container.appendChild(div);
+      });
+    }
+
+    // --- 艺术字结尾 ---
+    const artText = "Time doesn't always heal, it just breathes and swallows memories Like the seasons change Sending showers, beating flowers into the mud";
+    artText.split(' ').forEach(word => {
+      const span = document.createElement('span');
+      span.innerText = word;
+      document.getElementById('artLyric').appendChild(span);
+    });
+
+    initScraps();
+    renderWishes();
   </script>
 </body>
 </html>
