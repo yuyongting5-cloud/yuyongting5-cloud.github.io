@@ -86,13 +86,34 @@
   </div>
 
   <script>
-    // --- 🔑 配置与暗号 ---
     const SB_URL = "https://ykymzuaobitdhoyyqmxp.supabase.co";
     const SB_KEY = "sb_publishable_mU8Ivr3GpGOjugg2TxK5Jw_FCRxbtpS"; 
-    const MASTER_CODE = "2026"; // 👈 在这里修改你的管理暗号
+    const MASTER_CODE = "2026"; 
     const _supabase = supabase.createClient(SB_URL, SB_KEY);
 
     let db = { albumLyrics: {}, customScraps: [], deletedInitials: [], wishes: [] };
+
+    // --- 💎 你的初始內容（已全部幫你填好） ---
+    const initialScraps = [
+      { id:'s1', type:'text', content:'每次出門都幻想自己會閱讀。每次都帶著書出門帶著沒電的手機和沒翻開的書。好吧', x:80, y:200 },
+      { id:'s2', type:'text', content:'I\'m trying to go on this path But you say I haven\' t get the jests', x:550, y:120 },
+      { id:'s3', type:'text', content:'這個世界大概在我十七歲的時候就毀滅了，現在的每一天都只是我的幻覺。', x:120, y:500 },
+      { id:'s4', type:'text', content:'手裡有打開門的鑰匙但我得承認我只喜歡在生命的房間開一扇窗', x:400, y:750 },
+      { id:'s5', type:'img', content:'https://i.ibb.co/jZvfc09z/IMG-5712.jpg', x:650, y:350 },
+      { id:'s6', type:'img', content:'https://i.ibb.co/mFGz0qmf/IMG-7532.jpg', x:180, y:900 },
+      { id:'s7', type:'img', content:'https://i.ibb.co/PskfMxGg/IMG-5116.jpg', x:750, y:850 },
+      { id:'s8', type:'img', content:'https://i.ibb.co/BVZJFbZB/IMG-1072.jpg', x:80, y:1200 }
+    ];
+
+    const albums = [
+      { id:1, name: 'EndSerenading (Mineral)', img: 'https://i.ibb.co/7dM4QCx4/IMG-6823.jpg', songs: 'Love Letter / Palisade / Gjs' },
+      { id:2, name: '我們的靈魂樂 (透明雜誌)', img: 'https://i.ibb.co/pB7Wvb7D/IMG-6824.jpg', songs: '永遠的等待 / 少女 / 我們的靈魂樂' },
+      { id:3, name: '親愛的…我還不知道 (張懸)', img: 'https://i.ibb.co/pBHns4Yd/IMG-6821.jpg', songs: '關於我愛你 / 信任的樣子 / 並不' },
+      { id:4, name: '時間的歌 (陳綺貞)', img: 'https://i.ibb.co/whDZddfZ/IMG-6822.jpg', songs: '序曲 / 漣漪 / 柏拉圖式的愛情' },
+      { id:5, name: '的士房間 (薄荷葉)', img: 'https://i.ibb.co/4nC6wM7G/IMG-6828.jpg', songs: '的士房間 / 破壞 / 19歲' }
+    ];
+
+    let currentAlbumId = 1;
 
     async function sync() {
         document.getElementById('syncStatus').innerText = "Syncing...";
@@ -107,33 +128,8 @@
         document.getElementById('syncStatus').innerText = "Cloud: Connected";
     }
 
-    // --- 初始静态碎片 ---
-    const initialScraps = [
-      { id:'s1', type:'text', content:'每次出门都幻想自己会阅读。每次都带着书出门带着没电的手机和没翻开的书。好吧', x:80, y:200 },
-      { id:'s2', type:'text', content:'I\'m trying to go on this path But you say I haven\' t get the jests', x:550, y:120 },
-      { id:'s3', type:'text', content:'这个世界大概在我十七岁的时候就毁灭了，现在的每一天都只是我的幻觉。', x:120, y:500 },
-      { id:'s4', type:'text', content:'手裡有打開門的鑰匙但我得承認我只喜欢在生命的房间开一扇窗', x:400, y:750 },
-      { id:'s5', type:'img', content:'https://i.ibb.co/jZvfc09z/IMG-5712.jpg', x:650, y:350 },
-      { id:'s6', type:'img', content:'https://i.ibb.co/mFGz0qmf/IMG-7532.jpg', x:180, y:900 },
-      { id:'s7', type:'img', content:'https://i.ibb.co/PskfMxGg/IMG-5116.jpg', x:750, y:850 },
-      { id:'s8', type:'img', content:'https://i.ibb.co/BVZJFbZB/IMG-1072.jpg', x:80, y:1200 }
-    ];
+    function renderEverything() { renderScraps(); renderWishes(); renderAlbumLyrics(); }
 
-    const albums = [
-      { id:1, name: 'EndSerenading (Mineral)', img: 'https://i.ibb.co/7dM4QCx4/IMG-6823.jpg', songs: 'Love Letter / Palisade / Gjs' },
-      { id:2, name: '我们的灵魂乐 (透明杂志)', img: 'https://i.ibb.co/pB7Wvb7D/IMG-6824.jpg', songs: '永远的等待 / 少女 / 我们的灵魂乐' },
-      { id:3, name: '亲爱的…我还不知道 (张悬)', img: 'https://i.ibb.co/pBHns4Yd/IMG-6821.jpg', songs: '关于我爱你 / 信任的样子 / 并不' },
-      { id:4, name: '时间的歌 (陈绮贞)', img: 'https://i.ibb.co/whDZddfZ/IMG-6822.jpg', songs: '序曲 / 涟漪 / 柏拉图式的爱情' },
-      { id:5, name: '的士房间 (薄荷叶)', img: 'https://i.ibb.co/4nC6wM7G/IMG-6828.jpg', songs: '的士房间 / 破坏 / 19岁' }
-    ];
-
-    let currentAlbumId = 1;
-
-    function renderEverything() {
-      renderScraps(); renderWishes(); renderAlbumLyrics();
-    }
-
-    // 渲染专辑列表逻辑
     const listEl = document.getElementById('albumList');
     listEl.innerHTML = '';
     albums.forEach((alb, idx) => {
@@ -197,12 +193,10 @@
       });
     }
 
-    // --- 🔐 暗号验证逻辑 ---
     function checkAuth() {
-        const pw = prompt("请输入管理暗号以进行此操作 (Archive Passcode Required):");
+        const pw = prompt("Archive Passcode Required:");
         if (pw === MASTER_CODE) return true;
-        alert("暗号错误，操作未被保存。");
-        return false;
+        alert("暗號錯誤。"); return false;
     }
 
     let activeMode = '';
@@ -212,13 +206,11 @@
     async function saveContent() {
       const val = document.getElementById('modalInput').value;
       if(!val) return;
-      // 留言区不需要暗号，大家都能留言
       if(activeMode === 'wish') {
         const nicks=['Echo','Velvet','Neon'], roles=['Ghost','Poet','Soul'];
         const name = nicks[Math.floor(Math.random()*nicks.length)] + ' ' + roles[Math.floor(Math.random()*roles.length)];
         db.wishes.push({ content: val, name, time: new Date().toLocaleString() });
       } else {
-        // 修改内容需要暗号
         if(!checkAuth()) return;
         if(activeMode === 'albumLyric') {
             if(!db.albumLyrics[currentAlbumId]) db.albumLyrics[currentAlbumId] = [];
@@ -239,6 +231,7 @@
       document.getElementById('bgStar').style.transform = `translate(${moveX}px, ${moveY}px)`;
     });
 
+    document.getElementById('scrapbook').ondblclick = (e) => { if(e.target.id === 'scrapbook') openModal('scrapText'); }
     load();
   </script>
 </body>
