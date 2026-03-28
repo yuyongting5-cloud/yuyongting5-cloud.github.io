@@ -1,89 +1,8 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All About Destiny | Archive</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;500;900&display=swap" rel="stylesheet">
-  <style>
-    body { background-color: #fff; color: #000; font-family: 'Noto Serif SC', serif; overflow-x: hidden; scroll-behavior: smooth; }
-    .star-outline { position: absolute; top: 10%; left: 20%; width: 65vw; opacity: 0.08; z-index: -1; pointer-events: none; transition: transform 0.1s ease-out; }
-    .album-vertical-list { height: 650px; overflow-y: auto; scrollbar-width: none; perspective: 1000px; padding: 40px 0; }
-    .album-item { cursor: pointer; transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1); filter: grayscale(100%); opacity: 0.2; margin-bottom: 40px; }
-    .album-item.active { filter: grayscale(0%); opacity: 1; transform: translateX(20px) scale(1.05) !important; box-shadow: 20px 20px 60px rgba(0,0,0,0.1); }
-    .album-detail-wrap::before { content: attr(data-index); position: absolute; top: -80px; right: -40px; font-size: 20rem; font-weight: 900; color: rgba(0,0,0,0.03); z-index: -1; pointer-events: none; }
-    .scrapbook-section { position: relative; min-height: 160vh; width: 100%; border-top: 1px solid #eee; background: #fafafa; overflow: hidden; }
-    .scrap-item { position: absolute; transition: transform 0.3s; z-index: 10; }
-    .delete-mark { position: absolute; bottom: -10px; right: -10px; width: 22px; height: 22px; background: #000; color: #fff; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; z-index: 100; border: 2px solid #fff; }
-    .scrap-item:hover .delete-mark { display: flex; }
-    .modal { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.98); z-index: 1000; align-items: center; justify-content: center; }
-  </style>
-</head>
-<body>
-  <div id="syncStatus" style="position:fixed; top:10px; right:10px; font-size:10px; color:#ccc;">Cloud: Connecting...</div>
-  <svg class="star-outline" id="bgStar" viewBox="0 0 512 512" fill="none" stroke="black" stroke-width="1.5"><path d="M256 40l61 168h175L350 312l54 160-148-98-148 98 54-160L20 208h175z"/></svg>
-
-  <header class="min-h-screen flex flex-col md:flex-row items-center justify-center px-10 md:px-24">
-    <div class="flex-1 z-10">
-      <h1 class="text-[clamp(3rem,12vw,9rem)] font-light leading-[0.9]">ALL ABOUT<br>DESTINY.</h1>
-      <p class="mt-14 text-2xl md:text-4xl italic opacity-60">"one thing i can tell you is you got to be free"</p>
-    </div>
-    <div class="flex-1 flex justify-center md:justify-end md:-ml-32 mt-12 md:mt-0">
-      <img src="https://i.ibb.co/m58hqtc6/IMG-6823.jpg" class="w-64 md:w-96 shadow-2xl rotate-2">
-    </div>
-  </header>
-
-  <section class="py-40 px-10 md:px-24 flex flex-col md:flex-row gap-20 items-center">
-    <div class="w-full md:w-[40%] album-vertical-list" id="albumList"></div>
-    <div class="flex-1 relative">
-      <div id="albumDetail" class="album-detail-wrap opacity-0 transition-opacity duration-500">
-        <h3 id="detailTitle" class="text-5xl font-black mb-2 tracking-tighter"></h3>
-        <p id="detailSongs" class="text-xs opacity-30 mb-10 tracking-widest uppercase"></p>
-        <div class="flex justify-between items-center border-b border-black mb-6 pb-2">
-          <span class="text-[10px] uppercase tracking-widest">Archive Lyrics</span>
-          <button onclick="openModal('albumLyric')" class="text-[10px] underline">+ Add New</button>
-        </div>
-        <div id="albumLyricContainer" class="space-y-6"></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="scrapbook-section" id="scrapbook">
-    <div class="absolute top-10 left-10 z-[100] flex gap-4">
-      <button onclick="openModal('scrapText')" class="bg-black text-white text-[10px] px-6 py-2 uppercase">+ Text</button>
-      <button onclick="openModal('scrapImage')" class="bg-black text-white text-[10px] px-6 py-2 uppercase">+ Image URL</button>
-    </div>
-  </section>
-
-  <footer class="py-48 px-10 text-center flex flex-col items-center">
-    <div class="max-w-5xl text-3xl md:text-6xl italic font-light mb-72">Time doesn't always heal, it just breathes and swallows memories...</div>
-    <div class="max-w-xl mx-auto text-left w-full">
-      <div class="flex justify-between items-end mb-12 border-b border-black pb-2">
-        <h2 class="text-4xl font-black">I WISH</h2>
-        <button onclick="openModal('wish')" class="text-xs underline">Leave a message</button>
-      </div>
-      <div id="wishContainer" class="space-y-10"></div>
-    </div>
-  </header>
-
-  <div id="globalModal" class="modal">
-    <div class="modal-content text-center w-full max-w-md p-6">
-      <textarea id="modalInput" class="w-full h-40 border-b border-black outline-none p-4 text-xl bg-transparent" placeholder="Write here..."></textarea>
-      <div class="mt-8 flex justify-center gap-10">
-        <button onclick="closeModal()" class="uppercase text-xs">Cancel</button>
-        <button onclick="saveContent()" class="uppercase text-xs font-bold underline">Confirm</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     const _supabase = supabase.createClient("https://ykymzuaobitdhoyyqmxp.supabase.co", "sb_publishable_mU8Ivr3GpGOjugg2TxK5Jw_FCRxbtpS");
     const MASTER_CODE = "2026";
     let db = { albumLyrics: {}, customScraps: [], deletedInitials: [], wishes: [] };
 
-    // --- 💎 你的照片和文字全在这里，不会丢了 ---
     const initialScraps = [
       { id:'s1', type:'text', content:'每次出门都幻想自己会阅读。每次都带着书出门带着没电的手机和没翻开的书。好吧', x:80, y:200 },
       { id:'s2', type:'text', content:'I\'m trying to go on this path But you say I haven\' t get the jests', x:550, y:120 },
@@ -97,10 +16,10 @@
 
     const albums = [
       { id:1, name: 'EndSerenading (Mineral)', img: 'https://i.ibb.co/7dM4QCx4/IMG-6823.jpg', songs: 'Love Letter / Palisade / Gjs' },
-      { id:2, name: '我们的灵魂乐 (透明杂志)', img: 'https://i.ibb.co/pB7Wvb7D/IMG-6824.jpg', songs: '永远的等待 / 少女 / 我们的灵魂乐' },
+      { id:2, name: '我们的灵魂乐 (透明杂志)', img: 'https://i.ibb.co/pB7Wvb7D/IMG-6824.jpg', songs: '永远的等待 /少女 / 我们的灵魂乐' },
       { id:3, name: '亲爱的…我还不知道 (张悬)', img: 'https://i.ibb.co/pBHns4Yd/IMG-6821.jpg', songs: '关于我爱你 / 信任的样子 / 并不' },
       { id:4, name: '时间的歌 (陈绮贞)', img: 'https://i.ibb.co/whDZddfZ/IMG-6822.jpg', songs: '序曲 / 涟漪 / 柏拉图式的爱情' },
-      { id:5, name: '的士房间 (薄荷叶)', img: 'https://i.ibb.co/RktxGP9m/IMG-6828.jpg', songs: '的士房间 / 破坏 / 19岁' }
+      { id:5, name: '的士房间 (薄荷叶)', img: 'https://i.ibb.co/mFGz0qmx/IMG-6828.jpg', songs: '的士房间 / 破坏 / 19岁' }
     ];
 
     async function load() {
@@ -177,7 +96,8 @@
     async function saveContent() {
       const val = document.getElementById('modalInput').value; if(!val) return;
       if(activeMode !== 'wish') {
-        const pw = prompt("Archive Passcode Required (2026):");
+        // 这里删掉了提示语里的 (2026)
+        const pw = prompt("Archive Passcode Required:");
         if(pw !== MASTER_CODE) return alert("暗号不对");
       }
       if(activeMode === 'wish') db.wishes.push({ content: val, name: 'Soul Ghost', time: new Date().toLocaleString() });
@@ -187,13 +107,13 @@
     }
 
     window.del = async (isInit, key) => {
-      const pw = prompt("Delete Required:"); if(pw !== MASTER_CODE) return;
+      const pw = prompt("Delete Permission Required:"); if(pw !== MASTER_CODE) return;
       if(isInit) db.deletedInitials.push(key); else db.customScraps.splice(key, 1);
       await sync();
     };
 
     window.delLyric = async (i) => {
-      const pw = prompt("Delete Required:"); if(pw !== MASTER_CODE) return;
+      const pw = prompt("Delete Permission Required:"); if(pw !== MASTER_CODE) return;
       db.albumLyrics[window.currentId].splice(i, 1); await sync();
     };
 
@@ -209,5 +129,3 @@
 
     load();
   </script>
-</body>
-</html>
